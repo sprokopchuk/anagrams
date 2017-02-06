@@ -103,28 +103,17 @@ object Anagrams {
    *  in the example above could have been displayed in some other order.
    */
   def combinations(occurrences: Occurrences): List[Occurrences] = {
-    def makeCombinations(occurs: Occurrences, occursList: List[Occurrences]): List[Occurrences] = {
-      val sets = occurs.map(x => (for(p <- 1 to x._2) yield (x._1, p)).toList)
-      sets match {
-        case Nil => occursList
-        case s::st => {
-          (for{
-            set <- sets
-            pair <- set
-            } yield occursList.head ::: List(pair)):::makeCombinations(occurs.tail, occursList)
-        }
-      }
-    }
     occurrences match {
       case Nil => List(List())
       case y::ys => {
-        (for{
-          value <- 1 to y._2
-        } yield makeCombinations(ys, List((y._1, value))::Nil)).flatten.toList ::: combinations(ys)
+        val occursList = combinations(ys)
+        occursList ::: (for{
+          p <- 1 to y._2
+          elem <- occursList
+          } yield List((y._1, p)):::elem).toList
       }
     }
   }
-
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    *
