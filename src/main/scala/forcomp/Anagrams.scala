@@ -42,7 +42,7 @@ object Anagrams {
   def sentenceOccurrences(s: Sentence): Occurrences = {
     s match {
       case Nil => Nil
-      case x::xs => wordOccurrences(x) ::: sentenceOccurrences(xs)
+      case x::xs => wordOccurrences(s.mkString(""))
     }
   }
 
