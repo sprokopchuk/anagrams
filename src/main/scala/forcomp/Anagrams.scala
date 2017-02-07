@@ -126,15 +126,14 @@ object Anagrams {
    *  and has no zero-entries.
    */
   def subtract(x: Occurrences, y: Occurrences): Occurrences = {
-    val xmap = x.toMap
     y match {
       case Nil => x
-      case yhead::ytail => {
-        val xvalue = xmap(yhead._1)
-        if(xvalue == yhead._2)
-        subtract((xmap - yhead._1).toList, ytail)
-        else
-        subtract((xmap.updated(yhead._1, xvalue - yhead._2)).toList, ytail)
+      case _ => {
+        val ymap = y.toMap.withDefaultValue(0)
+        x.foldLeft(Map[Char, Int]()) { (map, pair) => {
+            map.updated(pair._1, pair._2 - ymap.apply(pair._1))
+          }
+        }.filter(_._2 > 0).toList.sortBy(_._1)
       }
     }
   }
