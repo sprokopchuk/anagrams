@@ -178,5 +178,31 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    val allWords = dictionaryByOccurrences.withDefaultValue(List())
+    val sentenceOccurs = sentenceOccurrences(sentence)
+    val combs = combinations(sentenceOccurs)
+    val combinationWords = (for(comb <- combs; word <- allWords(comb)) yield (word, comb)).toMap
+    def findAnagrams(occurs: Occurrences, anagram: Sentence): List[Sentence] = {
+      occurs match {
+        case Nil => List(anagram)
+        case _ => {
+          (for {
+            (word, comb) <- combinationWords
+            if(combinations(occurs).contains(comb))
+            remainAnag = findAnagrams(subtract(occurs, comb), word::anagram)
+            } yield remainAnag).toList.flatten
+          }
+        }
+    }
+    sentence match {
+      case Nil => List(List())
+      case _ => {
+        (for{
+          (word, comb) <- combinationWords
+          anag = findAnagrams(subtract(sentenceOccurs, comb), List(word))
+        } yield anag).toList.flatten.filter(!_.isEmpty)
+      }
+    }
+  }
 }
